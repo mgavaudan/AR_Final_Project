@@ -1,0 +1,66 @@
+Begin Object Class=Material Name="LSMat"
+   Begin Object Class=MaterialExpressionConstant Name="MaterialExpressionConstant_0"
+   End Object
+   Begin Object Class=MaterialExpressionConstant Name="MaterialExpressionConstant_1"
+   End Object
+   Begin Object Class=MaterialExpressionConstant3Vector Name="MaterialExpressionConstant3Vector_0"
+   End Object
+   Begin Object Class=MaterialExpressionLinearInterpolate Name="MaterialExpressionLinearInterpolate_0"
+   End Object
+   Begin Object Class=MaterialExpressionMultiply Name="MaterialExpressionMultiply_0"
+   End Object
+   Begin Object Class=SceneThumbnailInfoWithPrimitive Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   Begin Object Name="MaterialExpressionConstant_0"
+      R=75.000000
+      MaterialExpressionEditorX=-350
+      MaterialExpressionEditorY=355
+      MaterialExpressionGuid=5FC3C0EA402BBED8EC0DB48A36278129
+      Material=Material'LSMat'
+   End Object
+   Begin Object Name="MaterialExpressionConstant_1"
+      R=0.050000
+      MaterialExpressionEditorX=-176
+      MaterialExpressionEditorY=384
+      MaterialExpressionGuid=E8D5F769451AF31EF5E758A677428420
+      Material=Material'LSMat'
+      bCollapsed=False
+   End Object
+   Begin Object Name="MaterialExpressionConstant3Vector_0"
+      Constant=(R=0.000000,G=0.143092,B=0.275000,A=0.000000)
+      MaterialExpressionEditorX=-400
+      MaterialExpressionEditorY=96
+      MaterialExpressionGuid=BC5DC2C04DC6A983D7CF4F9DC75662A8
+      Material=Material'LSMat'
+   End Object
+   Begin Object Name="MaterialExpressionLinearInterpolate_0"
+      A=(Expression=MaterialExpressionMultiply'LSMat:MaterialExpressionMultiply_0')
+      B=(Expression=MaterialExpressionConstant'LSMat:MaterialExpressionConstant_0')
+      Alpha=(Expression=MaterialExpressionConstant'LSMat:MaterialExpressionConstant_1')
+      MaterialExpressionEditorX=-48
+      MaterialExpressionEditorY=176
+      MaterialExpressionGuid=D94DF1E44379FE4B2F687FAE5B09ECE2
+      Material=Material'LSMat'
+   End Object
+   Begin Object Name="MaterialExpressionMultiply_0"
+      A=(Expression=MaterialExpressionConstant3Vector'LSMat:MaterialExpressionConstant3Vector_0')
+      B=(Expression=MaterialExpressionConstant'LSMat:MaterialExpressionConstant_0')
+      MaterialExpressionEditorX=-208
+      MaterialExpressionEditorY=176
+      MaterialExpressionGuid=3C2CD3054271FB951361A1A3E45C0A75
+      Material=Material'LSMat'
+   End Object
+   Begin Object Name="SceneThumbnailInfoWithPrimitive_0"
+   End Object
+   EmissiveColor=(Expression=MaterialExpressionLinearInterpolate'MaterialExpressionLinearInterpolate_0')
+   EditorX=304
+   Expressions(0)=MaterialExpressionLinearInterpolate'MaterialExpressionLinearInterpolate_0'
+   Expressions(1)=MaterialExpressionConstant3Vector'MaterialExpressionConstant3Vector_0'
+   Expressions(2)=MaterialExpressionMultiply'MaterialExpressionMultiply_0'
+   Expressions(3)=MaterialExpressionConstant'MaterialExpressionConstant_0'
+   Expressions(4)=MaterialExpressionConstant'MaterialExpressionConstant_1'
+   bCanMaskedBeAssumedOpaque=True
+   StateId=FC119B804AD4FE5BBD760BBF9EF6163E
+   ThumbnailInfo=SceneThumbnailInfoWithPrimitive'SceneThumbnailInfoWithPrimitive_0'
+   LightingGuid=69B3354E481EA3CBEA628684A1AD7312
+End Object
