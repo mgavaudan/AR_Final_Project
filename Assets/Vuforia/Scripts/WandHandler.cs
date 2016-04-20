@@ -41,9 +41,9 @@ namespace Vuforia
 		void Update(){
 			
 			if (isRendered && !pointer) {
-				pointer = Instantiate (cylinder, transform.position + transform.up * -5, Quaternion.identity) as GameObject;
-				pointer.transform.RotateAround(pointer.transform.position, Vector3.forward, 180);
-				pointer.transform.parent = transform;
+				//pointer = Instantiate (cylinder, transform.position + transform.up * -5, Quaternion.identity) as GameObject;
+				//pointer.transform.RotateAround(pointer.transform.position, Vector3.forward, 180);
+				//pointer.transform.parent = transform;
 			}		
 		}
 
