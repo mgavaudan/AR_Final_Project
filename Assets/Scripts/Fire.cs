@@ -9,14 +9,13 @@ public class Fire : MonoBehaviour {
 	public Transform camera;
 	public float xBound = 3f;
 	public float yBound = 3f;
+	public float maxRadius = 100f;
 	public GameObject missilePrefab;
 	public Material missileMaterial;
 
 	private List<GameObject> missiles;
-	private Vector3 aim;
 
 	void Start() {
-		aim = Vector3.up;
 		missiles = new List<GameObject> ();
 
 		InvokeRepeating ("Shoot",1, fireRate);
@@ -29,14 +28,25 @@ public class Fire : MonoBehaviour {
 
 	}
 
-	// for debug
+
 	void FixedUpdate () {
+		// for debug
 		float moveHorizontal = Input.GetAxis("Horizontal");
 		float moveVertical = Input.GetAxis("Vertical");
-
 		Vector3 movement = new Vector3 (moveHorizontal, moveVertical, 0);
-
 		camera.transform.Translate (movement);
+
+		// clean up OOB missiles
+		List<GameObject> toRemove = new List<GameObject>();
+		foreach (GameObject m in missiles) {
+			if (Vector3.Distance(m.transform.position, Vector3.zero) > maxRadius) {
+				toRemove.Add (m);
+			}
+		}
+		foreach (GameObject x in toRemove) {
+			missiles.Remove (x);
+			Destroy (x);
+		}
 	}
 
 
@@ -52,7 +62,7 @@ public class Fire : MonoBehaviour {
 		Vector3 center = camera.position;
 		center.x += x;
 		center.y += y;
-		aim = (center - transform.position).normalized;
+		Vector3 aim = (center - transform.position).normalized;
 
 		missile.GetComponent<Rigidbody>().velocity = aim*speed;
 
