@@ -107,7 +107,7 @@ namespace Vuforia
 
 			Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " found");
 
-//			isRendered = true;
+			transform.GetChild(0).GetComponent<Fire>().StartShooting();
 		}
 
 
@@ -130,7 +130,7 @@ namespace Vuforia
 
 			Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " lost");
 
-//			isRendered = false;
+			transform.GetChild(0).GetComponent<Fire>().StopShooting();
 		}
 
 		#endregion // PRIVATE_METHODS

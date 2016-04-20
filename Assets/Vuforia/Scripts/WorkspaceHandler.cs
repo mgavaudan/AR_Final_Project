@@ -18,7 +18,7 @@ namespace Vuforia
  
         private TrackableBehaviour mTrackableBehaviour;
 		private GameObject trex;
-		private bool isRendered = false;
+		//private bool isRendered = false;
     
         #endregion // PRIVATE_MEMBER_VARIABLES
 
@@ -95,7 +95,7 @@ namespace Vuforia
 
             Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " found");
 
-			isRendered = true;
+			//isRendered = true;
         }
 
 
@@ -118,7 +118,7 @@ namespace Vuforia
 
             Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " lost");
 
-			isRendered = false;
+			//isRendered = false;
         }
 
         #endregion // PRIVATE_METHODS

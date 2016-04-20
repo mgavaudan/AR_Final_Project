@@ -17,8 +17,6 @@ public class Fire : MonoBehaviour {
 
 	void Start() {
 		missiles = new List<GameObject> ();
-
-		InvokeRepeating ("Shoot",1, fireRate);
 	}
 
 
@@ -49,8 +47,16 @@ public class Fire : MonoBehaviour {
 		}
 	}
 
+	public void StartShooting () {
+		InvokeRepeating ("Shoot",1, fireRate);
+	}
 
-	void Shoot() {
+	public void StopShooting() {
+		CancelInvoke ();
+	}
+
+
+	private void Shoot() {
 		GameObject missile = Instantiate (missilePrefab, transform.position, Quaternion.identity) as GameObject;
 		//missile.transform.parent = transform;
 		missile.transform.GetComponent<Renderer> ().material = missileMaterial;
@@ -58,10 +64,10 @@ public class Fire : MonoBehaviour {
 		missile.SetActive (true);
 
 		float x = (2*Random.value-1) * xBound;
-		float y = (2*Random.value-1) * yBound;
+		float z = (2*Random.value-1) * yBound;
 		Vector3 center = camera.position;
 		center.x += x;
-		center.y += y;
+		center.z += z;
 		Vector3 aim = (center - transform.position).normalized;
 
 		missile.GetComponent<Rigidbody>().velocity = aim*speed;
