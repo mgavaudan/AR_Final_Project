@@ -61,6 +61,7 @@ public class Fire : MonoBehaviour {
 		//missile.transform.parent = transform;
 		missile.transform.GetComponent<Renderer> ().material = missileMaterial;
 		missile.transform.localScale = new Vector3 (1f, 1f, 1f);
+		missile.AddComponent<MissileHandler> ();
 		missile.SetActive (true);
 
 		float x = (2*Random.value-1) * xBound;
@@ -75,7 +76,4 @@ public class Fire : MonoBehaviour {
 		missiles.Add (missile);
 	}
 
-	void OnCollisionEnter (Collision col) {
-
-	}
 }
