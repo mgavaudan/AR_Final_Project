@@ -15,6 +15,7 @@ public class MissileHandler : MonoBehaviour {
 
 
 	void OnCollisionEnter (Collision col) {
+		Debug.Log ("collision");
 		if (col.transform.name == "Orb") {
 			// hit the orb
 			Debug.Log("Orb hit");
