@@ -81,9 +81,10 @@ namespace Vuforia
 			}
 		}
 
-		#endregion // PUBLIC_METHODS
+        #endregion // PUBLIC_METHODS
 
 
+        public Fire orb;
 
 		#region PRIVATE_METHODS
 
@@ -107,7 +108,7 @@ namespace Vuforia
 
 			Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " found");
 
-//			isRendered = true;
+			orb.StartShooting();
 		}
 
 
@@ -130,7 +131,7 @@ namespace Vuforia
 
 			Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " lost");
 
-//			isRendered = false;
+			orb.StopShooting();
 		}
 
 		#endregion // PRIVATE_METHODS
