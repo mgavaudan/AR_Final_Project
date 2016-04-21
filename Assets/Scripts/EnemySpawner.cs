@@ -34,16 +34,18 @@ public class EnemySpawner : MonoBehaviour {
         int numTries = 0;
         do
         {
-            spawnPos.x += spawnDists.x * Random.Range(-1, 1);
-            spawnPos.y += spawnDists.y * Random.Range(-1, 1);
-            spawnPos.z += spawnDists.z * Random.Range(-1, 1);
+            spawnPos.x += spawnDists.x * (Random.value * 2 - 1);
+            spawnPos.y += spawnDists.y * (Random.value * 2 - 1);
+            spawnPos.z += spawnDists.z * (Random.value * 2 - 1);
             numTries++;
         } while (!tooClose(spawnPos) && numTries < maxSpawnTries);
 
         if (!tooClose(spawnPos))
         {
-            Quaternion spawnQuat = Quaternion.Euler(0, spawnAngle * Random.Range(-1, 1), 0);
-            Enemies.Add(Instantiate(enemyPrefab, spawnPos, spawnQuat) as Enemy);
+            Quaternion spawnQuat = Quaternion.Euler(0, spawnAngle * (Random.value * 2 - 1), 0);
+            Enemy enemy = Instantiate(enemyPrefab, spawnPos, spawnQuat) as Enemy;
+            enemy.transform.parent = transform;
+            Enemies.Add(enemy);
         }
     }
 

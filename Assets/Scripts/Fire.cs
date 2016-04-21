@@ -47,12 +47,13 @@ public class Fire : MonoBehaviour {
 
 	private void Shoot() {
 		MissileHandler missile = Instantiate(missilePrefab, transform.position, Quaternion.identity) as MissileHandler;
+        missile.transform.parent = transform;
 
 		float x = (2*Random.value-1) * xBound;
 		float z = (2*Random.value-1) * yBound;
         Vector3 center = target.transform.position;
-//		center.x += x;
-//		center.z += z;
+		center.x += x;
+		center.z += z;
 		Vector3 aim = (center - transform.position).normalized;
 
 		missile.Velocity = aim*speed;
