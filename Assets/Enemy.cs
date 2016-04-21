@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MissileHandler : MonoBehaviour {
+public class Enemy : MonoBehaviour {
 
-    public Vector3 Velocity { get; set; }
+    public float minDistFromEnemies = 0.3f;
 
 	// Use this for initialization
 	void Start () {
@@ -11,6 +11,5 @@ public class MissileHandler : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        transform.position += Velocity * Time.deltaTime;
 	}
 }

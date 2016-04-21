@@ -5,75 +5,58 @@ using System.Collections.Generic;
 public class Fire : MonoBehaviour {
 
 	public float fireRate = 1f;
+    public GameObject target;
 	public float speed = 5f;
-	public Transform camera;
 	public float xBound = 3f;
 	public float yBound = 3f;
 	public float maxRadius = 100f;
-	public GameObject missilePrefab;
-	public Material missileMaterial;
+	public MissileHandler missilePrefab;
 
 	private List<GameObject> missiles;
 
 	void Start() {
-		missiles = new List<GameObject> ();
+		missiles = new List<GameObject>();
 	}
 
-
-	// Update is called once per frame
 	void Update () {
-
-
-	}
-
-
-	void FixedUpdate () {
-		// for debug
 		float moveHorizontal = Input.GetAxis("Horizontal");
 		float moveVertical = Input.GetAxis("Vertical");
-		Vector3 movement = new Vector3 (moveHorizontal, moveVertical, 0);
-		camera.transform.Translate (movement);
+		Vector3 movement = new Vector3(moveHorizontal, moveVertical, 0);
+        transform.position += movement * speed;
 
-		// clean up OOB missiles
+		// clean up out-of-bounds missiles
 		List<GameObject> toRemove = new List<GameObject>();
 		foreach (GameObject m in missiles) {
 			if (Vector3.Distance(m.transform.position, Vector3.zero) > maxRadius) {
-				toRemove.Add (m);
+				toRemove.Add(m);
 			}
 		}
 		foreach (GameObject x in toRemove) {
-			missiles.Remove (x);
-			Destroy (x);
+			missiles.Remove(x);
+			Destroy(x);
 		}
 	}
 
 	public void StartShooting () {
-		InvokeRepeating ("Shoot",1, fireRate);
+		InvokeRepeating("Shoot", 0, fireRate);
 	}
 
 	public void StopShooting() {
-		CancelInvoke ();
+		CancelInvoke();
 	}
 
-
 	private void Shoot() {
-		GameObject missile = Instantiate (missilePrefab, transform.position, Quaternion.identity) as GameObject;
-		//missile.transform.parent = transform;
-		missile.transform.GetComponent<Renderer> ().material = missileMaterial;
-		missile.transform.localScale = new Vector3 (1f, 1f, 1f);
-		missile.AddComponent<MissileHandler> ();
-		missile.SetActive (true);
+		MissileHandler missile = Instantiate(missilePrefab, transform.position, Quaternion.identity) as MissileHandler;
 
 		float x = (2*Random.value-1) * xBound;
 		float z = (2*Random.value-1) * yBound;
-		Vector3 center = camera.position;
-		center.x += x;
-		center.z += z;
+        Vector3 center = target.transform.position;
+//		center.x += x;
+//		center.z += z;
 		Vector3 aim = (center - transform.position).normalized;
 
-		missile.GetComponent<Rigidbody>().velocity = aim*speed;
+		missile.Velocity = aim*speed;
 
-		missiles.Add (missile);
+		missiles.Add(missile.gameObject);
 	}
-
 }
