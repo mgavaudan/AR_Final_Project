@@ -11,7 +11,7 @@ namespace Vuforia
     /// <summary>
     /// A custom handler that implements the ITrackableEventHandler interface.
     /// </summary>
-    public class WandHandler : MonoBehaviour,
+    public class ForceHandler : MonoBehaviour,
                                                 ITrackableEventHandler
     {
         #region PRIVATE_MEMBER_VARIABLES
@@ -40,11 +40,11 @@ namespace Vuforia
 
 		void Update(){
 			
-			if (isRendered && !pointer) {
+//			if (isRendered && !pointer) {
 				//pointer = Instantiate (cylinder, transform.position + transform.up * -5, Quaternion.identity) as GameObject;
 				//pointer.transform.RotateAround(pointer.transform.position, Vector3.forward, 180);
 				//pointer.transform.parent = transform;
-			}		
+//			}		
 		}
 
         #endregion // UNTIY_MONOBEHAVIOUR_METHODS
