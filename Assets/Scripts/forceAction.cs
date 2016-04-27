@@ -27,10 +27,9 @@ public class forceAction : MonoBehaviour {
 			lineRenderer.SetPosition(0, transform.position); 
 			lineRenderer.SetPosition(1, hit.point);   
 
-			if(hit.collider.tag == "Mirrors"){
-				Vector3 pos = Vector3.Reflect (hit.point - this.transform.position, hit.normal);
-				lineRenderer.SetPosition(2,pos);
-				//lineRenderer.SetPosition(3, pos);
+			if(hit.collider.tag == "Enemy"){
+				// my code
+
 			}
 		}
 	}

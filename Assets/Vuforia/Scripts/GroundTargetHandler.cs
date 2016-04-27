@@ -18,13 +18,6 @@ namespace Vuforia
 
 		private TrackableBehaviour mTrackableBehaviour;
 
-//		private GameObject trex;
-//		private GameObject spaceship;
-//		private GameObject cube;
-//		private GameObject sphere;
-
-//		private GameObject cy;
-
 //		private bool isRendered = false;
 
 		#endregion // PRIVATE_MEMBER_VARIABLES
@@ -35,12 +28,6 @@ namespace Vuforia
 
 		void Start()
 		{
-//			trex = GameObject.Find ("Trex");
-//			spaceship = GameObject.Find ("Spaceship");
-//			cube = GameObject.Find ("Cube");
-//			sphere = GameObject.Find ("Sphere");
-
-//			cy = GameObject.Find ("Cylinder");
 
 			mTrackableBehaviour = GetComponent<TrackableBehaviour>();
 			if (mTrackableBehaviour)
@@ -50,9 +37,7 @@ namespace Vuforia
 		}
 
 		void Update(){
-//			if (isRendered && trex.transform.position.x < 20) {
-//				trex.transform.position += trex.transform.forward * 1.0f * Time.deltaTime;
-//			}
+
 		}
 
 		#endregion // UNTIY_MONOBEHAVIOUR_METHODS
