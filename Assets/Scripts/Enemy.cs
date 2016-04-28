@@ -4,6 +4,7 @@ using System.Collections;
 public class Enemy : MonoBehaviour {
 
     public float minDistFromEnemies = 0.3f;
+    public EnemySpawner Origin { get; set; }
 
 	// Use this for initialization
 	void Start () {
@@ -12,11 +13,4 @@ public class Enemy : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	}
-
-    void OnTriggerEnter(Collider col)
-    {
-        // TODO: remove from enemy spawner list
-        Destroy(col.gameObject);
-        Destroy(gameObject);
-    }
 }
