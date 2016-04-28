@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class RoomManager : MonoBehaviour
@@ -11,6 +12,8 @@ public class RoomManager : MonoBehaviour
     public Transform ground;
     public float rotationTime = 1;
     public Transform startPos;
+	public Transform arrow;
+	public Canvas display;
 
     private List<EnemySpawner> enemySpawners = new List<EnemySpawner>();
     private List<Fire> orbs = new List<Fire>();
@@ -25,6 +28,9 @@ public class RoomManager : MonoBehaviour
     private float angleRotated = 0;
 
     private bool initialized = false;
+	Image selectedPanel;
+	private Color selectedPanelColor = Color.blue;
+	private Color unselectedPanelColor = Color.white;
 
     // Use this for initialization
     void Start()
@@ -65,8 +71,14 @@ public class RoomManager : MonoBehaviour
                 }
             }
             initialized = true;
+
+            arrow.gameObject.SetActive (false); // hide arrow
+            selectedPanel = display.transform.Find ("Room " + (activeRoom+1) + " Panel").GetComponent<Image>();
+            selectedPanelColor.a = 0.4f;
+            unselectedPanelColor.a = 0.4f;
+            selectedPanel.color = selectedPanelColor; // highlight room on "map"
         }
-    }
+	}
 
     // Update is called once per frame
     void Update()
@@ -74,7 +86,6 @@ public class RoomManager : MonoBehaviour
         if (initialized)
         {
             float forceAngle = (Quaternion.Inverse(startQuat) * roomSwitcher.rotation).eulerAngles.z;
-            Debug.Log(forceAngle);
             if (readyToSwitch && Vector3.Angle(normal, roomSwitcher.up) < normalAngleEpsilon)
             {
                 if (forceAngle > switchAngle)
@@ -83,29 +94,40 @@ public class RoomManager : MonoBehaviour
                     rotateRoom(-1);
             }
 
+
             if (rotateDirection == 0 && Mathf.Abs(forceAngle) < switchAngle * 0.75f)
+            {
                 readyToSwitch = true;
+                arrow.parent = transform; // set arrow as child of room manager
+                arrow.position = transform.position; // set arrow in front of user
+                arrow.gameObject.SetActive(true); // make arrow visible
+            }
 
             if (rotateDirection != 0)
             {
                 float rotateAngle = 360 / numRooms / rotationTime * Time.deltaTime;
                 transform.Rotate(Vector3.up, rotateDirection * rotateAngle, Space.World);
-                // TODO: make arrow rotate as child of RoomManager
 
                 angleRotated += rotateAngle;
                 if (angleRotated >= 360 / numRooms)
                 {
-                    // TODO: delete arrow here
-
+                    arrow.gameObject.SetActive(false); // hides arrow
                     orbs[activeRoom].gameObject.SetActive(false);
                     enemySpawners[activeRoom].gameObject.SetActive(false);
 
                     activeRoom = (activeRoom + rotateDirection) % numRooms;
                     if (activeRoom < 0)
                         activeRoom += numRooms;
-
                     orbs[activeRoom].gameObject.SetActive(true);
                     orbs[activeRoom].StartShooting();
+                    enemySpawners[activeRoom].gameObject.SetActive(true);
+
+                    selectedPanel.color = unselectedPanelColor; // unhighlight previously active room on "map'
+                    selectedPanel = display.transform.Find ("Room " + (activeRoom+1) + " Panel").GetComponent<Image>(); // change selected panel to currently active room
+                    selectedPanel.color = selectedPanelColor; // highlight currently active room on "map"
+
+
+                    orbs[activeRoom].gameObject.SetActive(true);
                     enemySpawners[activeRoom].gameObject.SetActive(true);
 
                     rotateDirection = 0;
