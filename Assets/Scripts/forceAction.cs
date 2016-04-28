@@ -4,6 +4,7 @@ using System.Collections;
 public class forceAction : MonoBehaviour {
 	
 	LineRenderer lineRenderer;
+	int x = 0;
 	private int flag;
 
 	void Awake () {
@@ -23,11 +24,12 @@ public class forceAction : MonoBehaviour {
 
 		//lineRenderer.enabled = true;         
 		//lineRenderer.SetPosition(0, transform.position); 
-		//lineRenderer.SetPosition(1, hit.point);   
+		//lineRenderer.SetPosition(1, transform.position + 5 * transform.up);   
 
 
 		if(Physics.Raycast(transform.position, -1*transform.up, out hit,Mathf.Infinity)){
-			Debug.Log ("hit");
+			Debug.Log ("hit" + x);
+			x = x + 1;
 			lineRenderer.enabled = true;         
 			lineRenderer.SetPosition(0, transform.position); 
 			lineRenderer.SetPosition(1, hit.point);   
