@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class Fire : MonoBehaviour {
 
 	public float fireRate = 1f;
-    public GameObject target;
+    public Transform target;
 	public float speed = 5f;
 	public float xBound = 3f;
 	public float yBound = 3f;
@@ -51,7 +51,7 @@ public class Fire : MonoBehaviour {
 
 		float x = (2*Random.value-1) * xBound;
 		float z = (2*Random.value-1) * yBound;
-        Vector3 center = target.transform.position;
+        Vector3 center = target.position;
 		center.x += x;
 		center.z += z;
 		Vector3 aim = (center - transform.position).normalized;
