@@ -114,6 +114,18 @@ public class RoomManager : MonoBehaviour
         }
     }
 
+    private bool oldReadyToSwitch;
+    public void LostWand()
+    {
+        oldReadyToSwitch = readyToSwitch;
+        readyToSwitch = false;
+    }
+    
+    public void FoundWand()
+    {
+        readyToSwitch = oldReadyToSwitch;
+    }
+
     public void StartShooting()
     {
         if(initialized)
