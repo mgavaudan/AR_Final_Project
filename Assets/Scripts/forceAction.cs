@@ -21,9 +21,13 @@ public class forceAction : MonoBehaviour {
 	void Laser(){
 		RaycastHit hit;
 
+		//lineRenderer.enabled = true;         
+		//lineRenderer.SetPosition(0, transform.position); 
+		//lineRenderer.SetPosition(1, hit.point);   
 
-		if(Physics.Raycast(transform.position, transform.up, out hit,Mathf.Infinity)){
 
+		if(Physics.Raycast(transform.position, -1*transform.up, out hit,Mathf.Infinity)){
+			Debug.Log ("hit");
 			lineRenderer.enabled = true;         
 			lineRenderer.SetPosition(0, transform.position); 
 			lineRenderer.SetPosition(1, hit.point);   
@@ -43,7 +47,7 @@ public class forceAction : MonoBehaviour {
 	bool LaserCheck(){
 		RaycastHit hit;
 
-		if(Physics.Raycast(transform.position,Vector3.forward,out hit,Mathf.Infinity)){
+		if(Physics.Raycast(transform.position,-1*transform.up,out hit,Mathf.Infinity)){
 
 			if (hit.collider.tag == "Enemy") {
 				return true;
