@@ -69,7 +69,7 @@ namespace Vuforia
         #endregion // PUBLIC_METHODS
 
 
-        public RoomManager roomManager;
+        public RoomRotator rotator;
 
 		#region PRIVATE_METHODS
 
@@ -93,8 +93,8 @@ namespace Vuforia
 
 			Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " found");
 
-            roomManager.initialize();
-			roomManager.StartShooting();
+            rotator.initialize();
+			rotator.StartShooting();
 		}
 
 
@@ -117,7 +117,7 @@ namespace Vuforia
 
 			Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " lost");
 
-			roomManager.StopShooting();
+			rotator.StopShooting();
 		}
 
 		#endregion // PRIVATE_METHODS

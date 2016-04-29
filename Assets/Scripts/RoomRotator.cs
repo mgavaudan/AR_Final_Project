@@ -2,8 +2,20 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class RoomManager : MonoBehaviour
+public class RoomRotator : MonoBehaviour
 {
+    private class Hall
+    {
+        public Hall(EnemySpawner spawner, Fire orb/*, RoomManager oppositeRoom*/)
+        {
+            this.spawner = spawner;
+            this.orb = orb;
+        }
+        public EnemySpawner spawner;
+        public Fire orb;
+//        public RoomManager oppositeRoom; <- to be set by room generator
+    }
+
     public EnemySpawner enemySpawnerPrefab;
     public Fire orbPrefab;
     public int numRooms = 4;
@@ -15,9 +27,8 @@ public class RoomManager : MonoBehaviour
 	public Transform arrow;
 	public Canvas display;
 
-    private List<EnemySpawner> enemySpawners = new List<EnemySpawner>();
-    private List<Fire> orbs = new List<Fire>();
-    private int activeRoom = 0;
+    private List<Hall> halls = new List<Hall>();
+    private int activeHall = 0;
 
     private Vector3 normal;
     private Quaternion startQuat;
@@ -55,25 +66,25 @@ public class RoomManager : MonoBehaviour
                 EnemySpawner spawner = Instantiate(enemySpawnerPrefab, pos,
                         Quaternion.identity) as EnemySpawner;
                 spawner.transform.parent = transform;
-                enemySpawners.Add(spawner);
 
                 pos = transform.position + dir * orbRadius;
                 Fire orb = Instantiate(orbPrefab, pos, Quaternion.identity) as Fire;
                 orb.transform.parent = transform;
                 orb.target = startPos;
-                orbs.Add(orb);
 
                 if (i > 0)
                 {
-                    enemySpawners[i].gameObject.SetActive(false);
-                    orbs[i].gameObject.SetActive(false);
-                    orbs[i].StopShooting();
+                    spawner.gameObject.SetActive(false);
+                    orb.gameObject.SetActive(false);
+                    orb.StopShooting();
                 }
+
+                halls.Add(new Hall(spawner, orb));
             }
             initialized = true;
 
             arrow.gameObject.SetActive (false); // hide arrow
-            selectedPanel = display.transform.Find ("Room " + (activeRoom+1) + " Panel").GetComponent<Image>();
+            selectedPanel = display.transform.Find ("Room " + (activeHall+1) + " Panel").GetComponent<Image>();
             selectedPanelColor.a = 0.4f;
             unselectedPanelColor.a = 0.4f;
             selectedPanel.color = selectedPanelColor; // highlight room on "map"
@@ -106,29 +117,25 @@ public class RoomManager : MonoBehaviour
             if (rotateDirection != 0)
             {
                 float rotateAngle = 360 / numRooms / rotationTime * Time.deltaTime;
-                transform.Rotate(Vector3.up, rotateDirection * rotateAngle, Space.World);
+                transform.RotateAround(Vector3.up, transform.position, rotateDirection * rotateAngle);
 
                 angleRotated += rotateAngle;
                 if (angleRotated >= 360 / numRooms)
                 {
                     arrow.gameObject.SetActive(false); // hides arrow
-                    orbs[activeRoom].gameObject.SetActive(false);
-                    enemySpawners[activeRoom].gameObject.SetActive(false);
+                    halls[activeHall].orb.gameObject.SetActive(false);
+                    halls[activeHall].spawner.gameObject.SetActive(false);
 
-                    activeRoom = (activeRoom + rotateDirection) % numRooms;
-                    if (activeRoom < 0)
-                        activeRoom += numRooms;
-                    orbs[activeRoom].gameObject.SetActive(true);
-                    orbs[activeRoom].StartShooting();
-                    enemySpawners[activeRoom].gameObject.SetActive(true);
+                    activeHall = (activeHall + rotateDirection) % numRooms;
+                    if (activeHall < 0)
+                        activeHall += numRooms;
+                    halls[activeHall].orb.gameObject.SetActive(true);
+                    halls[activeHall].orb.StartShooting();
+                    halls[activeHall].spawner.gameObject.SetActive(true);
 
                     selectedPanel.color = unselectedPanelColor; // unhighlight previously active room on "map'
-                    selectedPanel = display.transform.Find ("Room " + (activeRoom+1) + " Panel").GetComponent<Image>(); // change selected panel to currently active room
+                    selectedPanel = display.transform.Find ("Room " + (activeHall+1) + " Panel").GetComponent<Image>(); // change selected panel to currently active room
                     selectedPanel.color = selectedPanelColor; // highlight currently active room on "map"
-
-
-                    orbs[activeRoom].gameObject.SetActive(true);
-                    enemySpawners[activeRoom].gameObject.SetActive(true);
 
                     rotateDirection = 0;
                 }
@@ -151,13 +158,13 @@ public class RoomManager : MonoBehaviour
     public void StartShooting()
     {
         if(initialized)
-            orbs[activeRoom].StartShooting();
+            halls[activeHall].orb.StartShooting();
     }
 
     public void StopShooting()
     {
         if(initialized)
-            orbs[activeRoom].StopShooting();
+            halls[activeHall].orb.StopShooting();
     }
 
     enum Direction { Clockwise, Counterclockwise, None };
@@ -167,16 +174,16 @@ public class RoomManager : MonoBehaviour
         readyToSwitch = false;
         rotateDirection = dir;
         angleRotated = 0;
-        orbs[activeRoom].StopShooting();
+        halls[activeHall].orb.StopShooting();
     }
 
     public Fire activeOrb()
     {
-        return orbs[activeRoom];
+        return halls[activeHall].orb;
     }
 
     public EnemySpawner activeEnemySpawner()
     {
-        return enemySpawners[activeRoom];
+        return halls[activeHall].spawner; ;
     }
 }
