@@ -16,7 +16,7 @@ namespace Vuforia
     {
         #region PRIVATE_MEMBER_VARIABLES
  
-        public RoomRotator rotator;
+        public Map map;
         private TrackableBehaviour mTrackableBehaviour;
 		private bool isRendered = false;
 		public GameObject cylinder;
@@ -83,7 +83,8 @@ namespace Vuforia
 
         private void OnTrackingFound()
         {
-            rotator.FoundWand();
+            if(map.CurrentRoom != null)
+                map.CurrentRoom.FoundWand();
 
             Renderer[] rendererComponents = GetComponentsInChildren<Renderer>(true);
             Collider[] colliderComponents = GetComponentsInChildren<Collider>(true);
@@ -108,7 +109,9 @@ namespace Vuforia
 
         private void OnTrackingLost()
         {
-            rotator.LostWand();
+            if(map.CurrentRoom != null)
+                map.CurrentRoom.LostWand();
+
             Renderer[] rendererComponents = GetComponentsInChildren<Renderer>(true);
             Collider[] colliderComponents = GetComponentsInChildren<Collider>(true);
 
