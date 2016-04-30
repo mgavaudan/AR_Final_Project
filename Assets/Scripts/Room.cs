@@ -16,6 +16,8 @@ public class Room : MonoBehaviour
         public EnemySpawner spawner;
         public Fire orb;
         public Room oppositeRoom;
+
+        // TODO: track when this is completed
         public bool completed = false;
     }
 
@@ -23,7 +25,6 @@ public class Room : MonoBehaviour
     public Fire orbPrefab;
 
     public float switchAngle = 70;
-    private float switchAngleBound = 180;
     public float rotationTime = 1;
 
     private Transform force;
@@ -34,6 +35,28 @@ public class Room : MonoBehaviour
     public Hall CurrentHall { get { return halls[activeHall]; } }
     private List<Hall> halls = new List<Hall>();
     private int activeHall = 0;
+    public int CurrentHallIndex
+    {
+        get
+        {
+            return activeHall;
+        }
+
+        set
+        {
+            CurrentHall.orb.StopShooting();
+            CurrentHall.orb.gameObject.SetActive(false);
+            CurrentHall.spawner.gameObject.SetActive(false);
+
+            float angle = 360 / numHalls * (activeHall - value);
+
+            activeHall = mod(value, numHalls);
+            transform.RotateAround(transform.position, rotationAxis, angle);
+
+            CurrentHall.orb.gameObject.SetActive(true);
+            CurrentHall.spawner.gameObject.SetActive(true);
+        }
+    }
 
     private Vector3 forceNormal;
     private Vector3 rotationAxis;
@@ -55,6 +78,7 @@ public class Room : MonoBehaviour
         if(!initialized)
         {
             this.force = force;
+            this.display = display;
 
             List<Room> rooms = new List<Room> { northRoom, eastRoom, southRoom, westRoom };
 

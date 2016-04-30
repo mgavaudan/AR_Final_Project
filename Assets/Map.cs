@@ -65,14 +65,16 @@ public class Map : MonoBehaviour {
     public void crossHall()
     {
         Room nextRoom = CurrentRoom.CurrentHall.oppositeRoom;
-        if(nextRoom != null)
+        // TODO: something has to set completed to be true when all enemies are defeated
+        if(nextRoom != null && CurrentRoom.CurrentHall.completed)
         {
             CurrentRoom.StopShooting();
             CurrentRoom.gameObject.SetActive(false);
+            int oldHallInd = CurrentRoom.CurrentHallIndex;
 
             CurrentRoom = nextRoom;
-
             CurrentRoom.gameObject.SetActive(true);
+            CurrentRoom.CurrentHallIndex = oldHallInd;
 
             isCrossing = true;
             doneCrossing = false;
