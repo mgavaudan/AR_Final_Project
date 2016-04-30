@@ -13,7 +13,7 @@ public class RoomRotator : MonoBehaviour
         }
         public EnemySpawner spawner;
         public Fire orb;
-//        public RoomManager oppositeRoom; <- to be set by room generator
+        public RoomRotator OppositeRoom { get; set; }
     }
 
     public EnemySpawner enemySpawnerPrefab;
@@ -21,10 +21,10 @@ public class RoomRotator : MonoBehaviour
     public int numRooms = 4;
     public Transform roomSwitcher;
     public float switchAngle = 70;
+    private float switchAngleBound = 180;
     public Transform ground;
     public float rotationTime = 1;
     public Transform startPos;
-	public Transform arrow;
 	public Canvas display;
 
     private List<Hall> halls = new List<Hall>();
@@ -83,7 +83,6 @@ public class RoomRotator : MonoBehaviour
             }
             initialized = true;
 
-            arrow.gameObject.SetActive (false); // hide arrow
             selectedPanel = display.transform.Find ("Room " + (activeHall+1) + " Panel").GetComponent<Image>();
             selectedPanelColor.a = 0.4f;
             unselectedPanelColor.a = 0.4f;
@@ -96,7 +95,7 @@ public class RoomRotator : MonoBehaviour
     {
         if (initialized)
         {
-            float forceAngle = (Quaternion.Inverse(startQuat) * roomSwitcher.rotation).eulerAngles.z;
+            float forceAngle = clipAngle((Quaternion.Inverse(startQuat) * roomSwitcher.rotation).eulerAngles.y);
             if (readyToSwitch && Vector3.Angle(normal, roomSwitcher.up) < normalAngleEpsilon)
             {
                 if (forceAngle > switchAngle)
@@ -105,42 +104,35 @@ public class RoomRotator : MonoBehaviour
                     rotateRoom(-1);
             }
 
-
-            if (rotateDirection == 0 && Mathf.Abs(forceAngle) < switchAngle * 0.75f)
+            if (rotateDirection == 0 && Mathf.Abs(forceAngle) < switchAngle * 0.5f)
             {
                 readyToSwitch = true;
-                arrow.parent = transform; // set arrow as child of room manager
-                arrow.position = transform.position; // set arrow in front of user
-                arrow.gameObject.SetActive(true); // make arrow visible
             }
 
             if (rotateDirection != 0)
             {
-                float rotateAngle = 360 / numRooms / rotationTime * Time.deltaTime;
-                transform.RotateAround(Vector3.up, transform.position, rotateDirection * rotateAngle);
+                float rotateAngle = 360 / numRooms * Time.deltaTime / rotationTime;
+                transform.RotateAround(transform.position, ground.forward, rotateDirection * rotateAngle);
 
                 angleRotated += rotateAngle;
                 if (angleRotated >= 360 / numRooms)
                 {
-                    arrow.gameObject.SetActive(false); // hides arrow
-                    halls[activeHall].orb.gameObject.SetActive(false);
-                    halls[activeHall].spawner.gameObject.SetActive(false);
-
-                    activeHall = (activeHall + rotateDirection) % numRooms;
-                    if (activeHall < 0)
-                        activeHall += numRooms;
-                    halls[activeHall].orb.gameObject.SetActive(true);
-                    halls[activeHall].orb.StartShooting();
-                    halls[activeHall].spawner.gameObject.SetActive(true);
-
-                    selectedPanel.color = unselectedPanelColor; // unhighlight previously active room on "map'
-                    selectedPanel = display.transform.Find ("Room " + (activeHall+1) + " Panel").GetComponent<Image>(); // change selected panel to currently active room
-                    selectedPanel.color = selectedPanelColor; // highlight currently active room on "map"
+                    Hall oldHall = halls[mod(activeHall + rotateDirection, numRooms)];
+                    oldHall.orb.gameObject.SetActive(false);
+                    oldHall.spawner.gameObject.SetActive(false);
 
                     rotateDirection = 0;
                 }
             }
         }
+    }
+
+    // force angle between -180 and 180
+    private float clipAngle(float angle)
+    {
+        if (angle <= 180)
+            return angle;
+        return angle - 360;
     }
 
     private bool oldReadyToSwitch;
@@ -175,6 +167,25 @@ public class RoomRotator : MonoBehaviour
         rotateDirection = dir;
         angleRotated = 0;
         halls[activeHall].orb.StopShooting();
+
+        activeHall = mod(activeHall - rotateDirection, numRooms);
+        if (activeHall < 0)
+            activeHall += numRooms;
+        halls[activeHall].orb.gameObject.SetActive(true);
+        halls[activeHall].orb.StartShooting();
+        halls[activeHall].spawner.gameObject.SetActive(true);
+
+        selectedPanel.color = unselectedPanelColor; // unhighlight previously active room on "map'
+        selectedPanel = display.transform.Find("Room " + (activeHall + 1) + " Panel").GetComponent<Image>();
+        selectedPanel.color = selectedPanelColor; // highlight currently active room on "map"
+    }
+
+    private int mod(int a, int b)
+    {
+        int c = a % b;
+        if (c < 0)
+            c += b;
+        return c;
     }
 
     public Fire activeOrb()
