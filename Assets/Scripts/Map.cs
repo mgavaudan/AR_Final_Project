@@ -140,7 +140,7 @@ public class Map : MonoBehaviour {
 	}
 
 	public void moveForward(){
-		
-		Vector3 movement = Vector3.MoveTowards (CurrentRoom.transform.position, camera.transform.position, 1.0f);
+		Vector3 movement = Vector3.MoveTowards (CurrentRoom.transform.position, camera.transform.position, 0.00000000001f);
+		CurrentRoom.transform.position += movement;
 	}
 }

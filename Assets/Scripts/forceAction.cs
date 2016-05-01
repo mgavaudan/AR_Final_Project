@@ -31,21 +31,8 @@ public class forceAction : MonoBehaviour {
 			Debug.Log ("hit" + x);
 			x = x + 1;
 
-			hit.transform.GetComponent<Renderer>().material.color = new Color(x,1,1);
-
-<<<<<<< HEAD
-			if (hit.collider.tag == "Enemy") {
-				StartCoroutine ("Select");
-
-			}
-
-			if (hit.collider.tag == "Door") {
-				StartCoroutine ("MoveForward");
-			}
-=======
 			 
 			lineRenderer.SetPosition (1, hit.point);  
->>>>>>> eceee67b9c4ac8eba33774aef78372bdf7b6f7ca
 
 			if (flag == 1) {
 				ParticleSystem exp = hit.transform.gameObject.GetComponent<ParticleSystem> ();
@@ -55,7 +42,13 @@ public class forceAction : MonoBehaviour {
 				flag = 0;
 			}
 			else if (hit.collider.tag == "Enemy") {
+				hit.transform.GetComponent<Renderer>().material.color = new Color(x,1,1);
 				StartCoroutine ("Select");
+			}
+			else if (hit.collider.tag == "SF_Door") {
+//				StartCoroutine ("Select");
+				Map m = GameObject.Find ("Map").GetComponent<Map> ();
+				m.moveForward ();
 			}
 
 
@@ -86,18 +79,6 @@ public class forceAction : MonoBehaviour {
 			flag = 1;
 		}
 	}
+		
 
-	bool ForceUp(){
-		if (transform.position.z - lastPos.z > 2.0f) {
-			lastPos = transform.position; 
-			return true;
-		}
-		lastPos = transform.position;
-		return false;
-	}
-
-	IEnumerator MoveForward(){
-		yield return new WaitForSeconds (0.5f);
-
-	}
 }
