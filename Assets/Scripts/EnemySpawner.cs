@@ -58,9 +58,11 @@ public class EnemySpawner : MonoBehaviour {
 
     bool tooClose(Vector3 pos)
     {
-        foreach (Enemy enemy in Enemies)
-            if (Vector3.Distance(enemy.transform.position, pos) < enemy.minDistFromEnemies)
-                return true;
+		foreach (Enemy enemy in Enemies)
+			if (enemy != null) {
+				if (Vector3.Distance (enemy.transform.position, pos) < enemy.minDistFromEnemies)
+					return true;
+			}
 
         return false;
     }
