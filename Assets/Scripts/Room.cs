@@ -91,25 +91,30 @@ public class Room : MonoBehaviour
 
             for (int i = 0; i < numHalls; i++)
             {
-                Vector3 dir = Quaternion.AngleAxis(i * 360 / numHalls, Vector3.up) * (-forceNormal);
-                Vector3 pos = transform.position + dir * spawnerRadius;
-
-                EnemySpawner spawner = Instantiate(enemySpawnerPrefab, pos,
-                        Quaternion.identity) as EnemySpawner;
-                spawner.transform.parent = transform;
-
-                pos = transform.position + dir * orbRadius;
-                Fire orb = Instantiate(orbPrefab, pos, Quaternion.identity) as Fire;
-                orb.transform.parent = transform;
-                orb.target = orbTarget;
-
-                if (i > 0)
+                if (rooms[i] != null)
                 {
-                    spawner.gameObject.SetActive(false);
-                    orb.gameObject.SetActive(false);
-                }
+                    Vector3 dir = Quaternion.AngleAxis(i * 360 / numHalls, Vector3.up) * (-forceNormal);
+                    Vector3 pos = transform.position + dir * spawnerRadius;
 
-                halls.Add(new Hall(spawner, orb, rooms[i]));
+                    EnemySpawner spawner = Instantiate(enemySpawnerPrefab, pos,
+                            Quaternion.identity) as EnemySpawner;
+                    spawner.transform.parent = transform;
+
+                    pos = transform.position + dir * orbRadius;
+                    Fire orb = Instantiate(orbPrefab, pos, Quaternion.identity) as Fire;
+                    orb.transform.parent = transform;
+                    orb.target = orbTarget;
+
+                    if (i > 0)
+                    {
+                        spawner.gameObject.SetActive(false);
+                        orb.gameObject.SetActive(false);
+                    }
+
+                    halls.Add(new Hall(spawner, orb, rooms[i]));
+                }
+                else
+                    halls.Add(null);
             }
 
             selectedPanel = display.transform.Find ("Room " + (activeHall+1) + " Panel").GetComponent<Image>();
@@ -155,10 +160,13 @@ public class Room : MonoBehaviour
                         oldHall.spawner.gameObject.SetActive(false);
                     }
 
-                    if(CurrentHall == null)
+                    if (CurrentHall == null)
                         rotateRoom(rotateDirection);
                     else
+                    {
                         rotateDirection = 0;
+                        CurrentHall.orb.StartShooting();
+                    }
                 }
             }
         }
@@ -203,14 +211,17 @@ public class Room : MonoBehaviour
         readyToSwitch = false;
         rotateDirection = dir;
         angleRotated = 0;
-        CurrentHall.orb.StopShooting();
+        if(CurrentHall != null)
+            CurrentHall.orb.StopShooting();
 
         activeHall = mod(activeHall - rotateDirection, numHalls);
         if (activeHall < 0)
             activeHall += numHalls;
-        CurrentHall.orb.gameObject.SetActive(true);
-        CurrentHall.orb.StartShooting();
-        CurrentHall.spawner.gameObject.SetActive(true);
+        if (CurrentHall != null)
+        {
+            CurrentHall.orb.gameObject.SetActive(true);
+            CurrentHall.spawner.gameObject.SetActive(true);
+        }
 
         selectedPanel.color = unselectedPanelColor; // unhighlight previously active room on "map'
         selectedPanel = display.transform.Find("Room " + (activeHall + 1) + " Panel").GetComponent<Image>();
