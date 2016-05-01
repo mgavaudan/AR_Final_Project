@@ -186,7 +186,7 @@ public class Room : MonoBehaviour
 
     public void StartShooting()
     {
-        if(initialized)
+        if(initialized || !CurrentHall.completed)
             CurrentHall.orb.StartShooting();
     }
 
