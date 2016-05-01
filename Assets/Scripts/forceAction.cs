@@ -6,6 +6,7 @@ public class forceAction : MonoBehaviour {
 	LineRenderer lineRenderer;
 	int x = 0;
 	private int flag;
+	Vector3 lastPos;
 
 	void Awake () {
 		lineRenderer = GetComponent<LineRenderer> ();
@@ -13,6 +14,7 @@ public class forceAction : MonoBehaviour {
 
 	void Start(){
 		flag = 0;
+		lastPos = transform.position;
 	}
 
 	void Update () {
@@ -40,6 +42,11 @@ public class forceAction : MonoBehaviour {
 
 			if (hit.collider.tag == "Enemy") {
 				StartCoroutine ("Select");
+
+			}
+
+			if (hit.collider.tag == "Door") {
+				StartCoroutine ("MoveForward");
 			}
 
 			if (flag == 1) {
@@ -73,5 +80,19 @@ public class forceAction : MonoBehaviour {
 		if (LaserCheck ()) {
 			
 		}
+	}
+
+	bool ForceUp(){
+		if (transform.position.z - lastPos.z > 2.0f) {
+			lastPos = transform.position; 
+			return true;
+		}
+		lastPos = transform.position;
+		return false;
+	}
+
+	IEnumerator MoveForward(){
+		yield return new WaitForSeconds (0.5f);
+
 	}
 }

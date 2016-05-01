@@ -6,7 +6,9 @@ public class Map : MonoBehaviour {
     public Transform force;
     public Transform ground;
     public Transform orbTarget;
+	public Transform minimap;
     public Canvas display;
+	public Camera camera;
 
     public int width = 2;
     public int height = 2;
@@ -16,11 +18,15 @@ public class Map : MonoBehaviour {
 
     public Room CurrentRoom { get; private set; }
 
+	forceAction forceScript;
+
     bool initialized = false;
     public void Initialize()
     {
+		
         if(!initialized)
         {
+			forceScript = GameObject.Find ("Force").GetComponent<forceAction>();
             List<List<Room>> map = new List<List<Room>>(width);
             for (int x = 0; x < width; x++)
             {
@@ -34,21 +40,36 @@ public class Map : MonoBehaviour {
                 map.Add(row);
             }
 
-            for(int x = 0; x < width; x++)
-                for(int y = 0; y < height; y++)
-                {
-                    Room northRoom = null, eastRoom = null, southRoom = null, westRoom = null;
-                    if (y + 1 < height)
-                        northRoom = map[x][y + 1];
-                    if (x + 1 < width)
-                        eastRoom = map[x + 1][y];
-                    if (y > 0)
-                        southRoom = map[x][y - 1];
-                    if (x > 0)
-                        westRoom = map[x - 1][y];
-                    map[x][y].Initialize(northRoom, eastRoom, southRoom, westRoom, force, ground, orbTarget, display);
-                    map[x][y].gameObject.SetActive(false);
-                }
+			float widthOffset = 0f;
+			float heightOffset = 0f;
+
+			Vector3 startingPos = minimap.transform.position;
+
+			for (int x = 0; x < width; x++) {
+				heightOffset = 0;
+
+				for (int y = 0; y < height; y++) {
+					Room northRoom = null, eastRoom = null, southRoom = null, westRoom = null;
+					if (y + 1 < height)
+						northRoom = map [x] [y + 1];
+					if (x + 1 < width)
+						eastRoom = map [x + 1] [y];
+					if (y > 0)
+						southRoom = map [x] [y - 1];
+					if (x > 0)
+						westRoom = map [x - 1] [y];
+					map [x] [y].Initialize (northRoom, eastRoom, southRoom, westRoom, force, ground, orbTarget, display);
+					map [x] [y].gameObject.SetActive (false);
+
+					GameObject block = GameObject.CreatePrimitive (PrimitiveType.Cube);
+					block.transform.parent = minimap.transform;
+					block.transform.localPosition = new Vector3 (x*60, -60 * y, 0);
+					block.transform.localScale = new Vector3 (50, 50, 0);
+					block.GetComponent<Renderer>().material.color = Color.white;
+				}
+			}
+
+
 
             CurrentRoom = map[startX][startY];
             CurrentRoom.gameObject.SetActive(true);
@@ -116,5 +137,10 @@ public class Map : MonoBehaviour {
                 }
             }
         }
+	}
+
+	public void moveForward(){
+		
+		Vector3 movement = Vector3.MoveTowards (CurrentRoom.transform.position, camera.transform.position, 1.0f);
 	}
 }
