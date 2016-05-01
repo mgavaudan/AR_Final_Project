@@ -91,25 +91,30 @@ public class Room : MonoBehaviour
 
             for (int i = 0; i < numHalls; i++)
             {
-                Vector3 dir = Quaternion.AngleAxis(i * 360 / numHalls, Vector3.up) * (-forceNormal);
-                Vector3 pos = transform.position + dir * spawnerRadius;
-
-                EnemySpawner spawner = Instantiate(enemySpawnerPrefab, pos,
-                        Quaternion.identity) as EnemySpawner;
-                spawner.transform.parent = transform;
-
-                pos = transform.position + dir * orbRadius;
-                Fire orb = Instantiate(orbPrefab, pos, Quaternion.identity) as Fire;
-                orb.transform.parent = transform;
-                orb.target = orbTarget;
-
-                if (i > 0)
+                if (rooms[i] != null)
                 {
-                    spawner.gameObject.SetActive(false);
-                    orb.gameObject.SetActive(false);
-                }
+                    Vector3 dir = Quaternion.AngleAxis(i * 360 / numHalls, Vector3.up) * (-forceNormal);
+                    Vector3 pos = transform.position + dir * spawnerRadius;
 
-                halls.Add(new Hall(spawner, orb, rooms[i]));
+                    EnemySpawner spawner = Instantiate(enemySpawnerPrefab, pos,
+                            Quaternion.identity) as EnemySpawner;
+                    spawner.transform.parent = transform;
+
+                    pos = transform.position + dir * orbRadius;
+                    Fire orb = Instantiate(orbPrefab, pos, Quaternion.identity) as Fire;
+                    orb.transform.parent = transform;
+                    orb.target = orbTarget;
+
+                    if (i > 0)
+                    {
+                        spawner.gameObject.SetActive(false);
+                        orb.gameObject.SetActive(false);
+                    }
+
+                    halls.Add(new Hall(spawner, orb, rooms[i]));
+                }
+                else
+                    halls.Add(null);
             }
 
             selectedPanel = display.transform.Find ("Room " + (activeHall+1) + " Panel").GetComponent<Image>();
