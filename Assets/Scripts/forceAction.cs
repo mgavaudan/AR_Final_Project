@@ -21,28 +21,36 @@ public class forceAction : MonoBehaviour {
 
 	void Laser(){
 		RaycastHit hit;
+		Ray ray = new Ray(transform.position, -transform.up);
+		lineRenderer.enabled = true;         
+		lineRenderer.SetPosition (0, transform.position);
 
 		//lineRenderer.enabled = true;         
 		//lineRenderer.SetPosition(0, transform.position); 
 		//lineRenderer.SetPosition(1, transform.position + 5 * transform.up);   
 
 
-		if(Physics.Raycast(transform.position, -1*transform.up, out hit,Mathf.Infinity)){
+		if (Physics.Raycast (transform.position, -1 * transform.up, out hit, Mathf.Infinity)) {
 			Debug.Log ("hit" + x);
 			x = x + 1;
-			lineRenderer.enabled = true;         
-			lineRenderer.SetPosition(0, transform.position); 
-			lineRenderer.SetPosition(1, hit.point);   
+			 
+			lineRenderer.SetPosition (1, hit.point);   
 
-			if(hit.collider.tag == "Enemy"){
+			Debug.Log (hit.collider.name);
+
+			if (hit.collider.tag == "Enemy") {
 				StartCoroutine ("Select");
 			}
 
 			if (flag == 1) {
-				var exp = GetComponent<ParticleSystem>();
-				exp.Play();
-				Destroy(hit.collider, exp.duration);
+				var exp = GetComponent<ParticleSystem> ();
+				exp.Play ();
+				Destroy (hit.collider, exp.duration);
 			}
+		} else {
+		
+			lineRenderer.SetPosition(1, ray.GetPoint(100));
+		
 		}
 	}
 
