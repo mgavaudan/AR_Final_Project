@@ -60,7 +60,6 @@ public class Map : MonoBehaviour {
     }
     
     private bool isCrossing;
-    private bool doneCrossing;
 
     public void crossHall()
     {
@@ -77,7 +76,6 @@ public class Map : MonoBehaviour {
             CurrentRoom.CurrentHallIndex = oldHallInd;
 
             isCrossing = true;
-            doneCrossing = false;
         }
     }
 
@@ -110,10 +108,8 @@ public class Map : MonoBehaviour {
         {
             if (isCrossing)
             {
-                // TODO: make animation while crossing, set doneCrossing at end of animation
-                doneCrossing = true;
-
-                if (doneCrossing)
+                // TODO: make animation while crossing
+                if (true)
                 {
                     isCrossing = false;
                     CurrentRoom.StartShooting();
