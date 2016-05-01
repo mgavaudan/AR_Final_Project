@@ -25,28 +25,27 @@ public class forceAction : MonoBehaviour {
 		lineRenderer.enabled = true;         
 		lineRenderer.SetPosition (0, transform.position);
 
-		//lineRenderer.enabled = true;         
-		//lineRenderer.SetPosition(0, transform.position); 
-		//lineRenderer.SetPosition(1, transform.position + 5 * transform.up);   
-
-
 		if (Physics.Raycast (transform.position, -1 * transform.up, out hit, Mathf.Infinity)) {
 			Debug.Log ("hit" + x);
 			x = x + 1;
+
+			hit.transform.GetComponent<Renderer>().material.color = new Color(x,1,1);
+
 			 
-			lineRenderer.SetPosition (1, hit.point);   
+			lineRenderer.SetPosition (1, hit.point);  
 
-			Debug.Log (hit.collider.name);
+			if (flag == 1) {
+				ParticleSystem exp = hit.transform.gameObject.GetComponent<ParticleSystem> ();
+				exp.Play ();
+				Destroy (hit.transform.gameObject, exp.duration);
 
-			if (hit.collider.tag == "Enemy") {
+				flag = 0;
+			}
+			else if (hit.collider.tag == "Enemy") {
 				StartCoroutine ("Select");
 			}
 
-			if (flag == 1) {
-				var exp = GetComponent<ParticleSystem> ();
-				exp.Play ();
-				Destroy (hit.collider, exp.duration);
-			}
+
 		} else {
 		
 			lineRenderer.SetPosition(1, ray.GetPoint(100));
@@ -71,7 +70,7 @@ public class forceAction : MonoBehaviour {
 	IEnumerator Select(){
 		yield return new WaitForSeconds (0.5f);
 		if (LaserCheck ()) {
-			
+			flag = 1;
 		}
 	}
 }
