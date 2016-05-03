@@ -4,16 +4,15 @@ using System.Collections;
 public class forceAction : MonoBehaviour {
 	
 	LineRenderer lineRenderer;
-	int x = 0;
-	private int flag;
+	float hitTime = 0;
 	Vector3 lastPos;
+	public float waitTime = 0.5f;
 
 	void Awake () {
 		lineRenderer = GetComponent<LineRenderer> ();
 	}
 
 	void Start(){
-		flag = 0;
 		lastPos = transform.position;
 	}
 
@@ -27,57 +26,50 @@ public class forceAction : MonoBehaviour {
 		lineRenderer.enabled = true;         
 		lineRenderer.SetPosition (0, transform.position);
 
-		if (Physics.Raycast (transform.position, -1 * transform.up, out hit, Mathf.Infinity)) {
-			Debug.Log ("hit" + x);
-			x = x + 1;
+		int layermask = 1 << LayerMask.NameToLayer ("ReflectTarget");
+		layermask |= 1 << LayerMask.NameToLayer ("DoorLayer");
+		if (Physics.Raycast (transform.position, -1 * transform.up, out hit, float.PositiveInfinity, layermask)) {
+			Debug.Log ("hit" + hitTime);
+			hitTime += Time.deltaTime;
 
 			 
 			lineRenderer.SetPosition (1, hit.point);  
 
-			if (flag == 1) {
-				ParticleSystem exp = hit.transform.gameObject.GetComponent<ParticleSystem> ();
-				exp.Play ();
-				Destroy (hit.transform.gameObject, exp.duration);
-
-				flag = 0;
-			}
-			else if (hit.collider.tag == "Enemy") {
-				hit.transform.GetComponent<Renderer>().material.color = new Color(x,1,1);
+			if (hit.collider.tag == "Enemy") {
+				float c = (waitTime - hitTime) / waitTime;
+				hit.transform.GetComponent<Renderer>().material.color = new Color(1,c,c);
 				StartCoroutine ("Select");
 			}
 			else if (hit.collider.tag == "SF_Door") {
-//				StartCoroutine ("Select");
 				Map m = GameObject.Find ("Map").GetComponent<Map> ();
 				m.moveForward ();
 			}
 
 
 		} else {
-		
+			hitTime = 0;
 			lineRenderer.SetPosition(1, ray.GetPoint(100));
-		
 		}
 	}
 
-	bool LaserCheck(){
+	void LaserCheck(){
 		RaycastHit hit;
 
 		if(Physics.Raycast(transform.position,-1*transform.up,out hit,Mathf.Infinity)){
 
 			if (hit.collider.tag == "Enemy") {
-				return true;
+				ParticleSystem exp = hit.transform.gameObject.GetComponent<ParticleSystem> ();
+				exp.Play ();
+				Destroy (hit.transform.gameObject, exp.duration);
+
 			} 
 		}
 
-		return false;
 	}
-
-
+		
 	IEnumerator Select(){
-		yield return new WaitForSeconds (0.5f);
-		if (LaserCheck ()) {
-			flag = 1;
-		}
+		yield return new WaitForSeconds (waitTime);
+		LaserCheck ();
 	}
 		
 
