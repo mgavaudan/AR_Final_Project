@@ -82,7 +82,7 @@ public class Map : MonoBehaviour {
     public void crossHall()
     {
         Room.Hall hall = CurrentRoom.CurrentHall;
-		if(hall != null && !isCrossing)
+		if(hall != null && !isCrossing && hall.spawner.IsCompleted)
         {
             CurrentRoom.StopShooting();
             CurrentRoom.gameObject.SetActive(false);

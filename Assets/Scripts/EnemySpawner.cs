@@ -7,7 +7,7 @@ public class EnemySpawner : MonoBehaviour {
     public float spawnTime = 1;
 
 	private int enemiesSpawned = 0;
-    public int maxEnemies = 5;
+    public int maxEnemies = 0;
 
     public Vector3 spawnDists;
     public float spawnAngle = 30;
@@ -33,13 +33,19 @@ public class EnemySpawner : MonoBehaviour {
 		// spawn enemy every spawTime seconds
         timeSinceLastSpawn += Time.deltaTime;
 
-		if (timeSinceLastSpawn >= spawnTime && checkEnemies())
+		if (checkEnemies() && timeSinceLastSpawn >= spawnTime)
         {
             spawnEnemy();
             timeSinceLastSpawn = 0;
         }
 			
 	}
+
+    public void DestroyEnemy(Enemy e, float t)
+    {
+        Enemies.Remove(e);
+        Destroy(e.gameObject, t);
+    }
 
     public void DestroyEnemy(Enemy e)
     {
@@ -71,8 +77,9 @@ public class EnemySpawner : MonoBehaviour {
     }
 
 	bool checkEnemies(){
-		if (enemiesSpawned == maxEnemies) {
-			isCompleted = true;
+		if (enemiesSpawned >= maxEnemies) {
+            if(Enemies.Count == 0)
+                isCompleted = true;
 			return false;
 		}
 		return true;

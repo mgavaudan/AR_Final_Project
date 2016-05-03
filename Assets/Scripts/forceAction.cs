@@ -8,6 +8,8 @@ public class forceAction : MonoBehaviour {
 	Vector3 lastPos;
 	public float waitTime = 0.5f;
 
+    public Map map;
+
 	void Awake () {
 		lineRenderer = GetComponent<LineRenderer> ();
 	}
@@ -61,7 +63,7 @@ public class forceAction : MonoBehaviour {
 			if (hit.collider.tag == "Enemy") {
 				ParticleSystem exp = hit.transform.gameObject.GetComponent<ParticleSystem> ();
 				exp.Play ();
-				Destroy (hit.transform.gameObject, exp.duration);
+                map.CurrentRoom.activeEnemySpawner().DestroyEnemy(hit.transform.gameObject.GetComponent<Enemy>(), exp.duration);
 
 			} 
 		}

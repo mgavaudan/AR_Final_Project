@@ -179,6 +179,12 @@ public class Room : MonoBehaviour
                         CurrentHall.orb.StartShooting();
                 }
             }
+
+            if(CurrentHall.spawner != null && CurrentHall.spawner.IsCompleted)
+            {
+                CurrentHall.spawner.gameObject.SetActive(false);
+                CurrentHall.orb.gameObject.SetActive(false);
+            }
         }
     }
 
