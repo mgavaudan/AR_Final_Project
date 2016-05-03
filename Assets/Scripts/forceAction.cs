@@ -29,17 +29,19 @@ public class forceAction : MonoBehaviour {
 		int layermask = 1 << LayerMask.NameToLayer ("ReflectTarget");
 		layermask |= 1 << LayerMask.NameToLayer ("DoorLayer");
 		if (Physics.Raycast (transform.position, -1 * transform.up, out hit, float.PositiveInfinity, layermask)) {
-			Debug.Log ("hit" + hitTime);
+			
 			hitTime += Time.deltaTime;
-			 
 			lineRenderer.SetPosition (1, hit.point);  
 
 			if (hit.collider.tag == "Enemy") {
+				Debug.Log ("hit Enemy");
+
 				float c = (waitTime - hitTime) / waitTime;
 				hit.transform.GetComponent<Renderer>().material.color = new Color(1,c,c);
 				StartCoroutine ("Select");
 			}
 			else if (hit.collider.tag == "SF_Door") {
+				Debug.Log ("hit Door");
 				Map m = GameObject.Find ("Map").GetComponent<Map> ();
 				m.crossHall();
 			}

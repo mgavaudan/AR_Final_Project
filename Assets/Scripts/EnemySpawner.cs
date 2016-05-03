@@ -5,7 +5,10 @@ public class EnemySpawner : MonoBehaviour {
 
     public Enemy enemyPrefab;
     public float spawnTime = 1;
-    public int maxEnemies = 10;
+
+	private int enemiesSpawned = 0;
+    public int maxEnemies = 5;
+
     public Vector3 spawnDists;
     public float spawnAngle = 30;
 
@@ -14,7 +17,7 @@ public class EnemySpawner : MonoBehaviour {
     private int maxSpawnTries = 5;
     private float timeSinceLastSpawn = 0;
 
-	bool isCompleted = false;
+	private bool isCompleted = false;
 	public bool IsCompleted
 	{
 		get {
@@ -22,23 +25,20 @@ public class EnemySpawner : MonoBehaviour {
 		}
 	}
 
-	// get iscompleted logic to work
-	// get spawn logic to work
-
-
-	// Use this for initialization
 	void Start () {
         Enemies = new List<Enemy>();
 	}
 	
-	// Update is called once per frame
 	void Update () {
+		// spawn enemy every spawTime seconds
         timeSinceLastSpawn += Time.deltaTime;
-        if (timeSinceLastSpawn >= spawnTime && Enemies.Count < maxEnemies)
+
+		if (timeSinceLastSpawn >= spawnTime && checkEnemies())
         {
             spawnEnemy();
             timeSinceLastSpawn = 0;
         }
+			
 	}
 
     public void DestroyEnemy(Enemy e)
@@ -48,8 +48,10 @@ public class EnemySpawner : MonoBehaviour {
     }
 
     void spawnEnemy() {
+		
         Vector3 spawnPos = transform.position;
-        int numTries = 0;
+		int numTries = 0;
+		enemiesSpawned++;
         do
         {
             spawnPos.x += spawnDists.x * (Random.value * 2 - 1);
@@ -67,6 +69,14 @@ public class EnemySpawner : MonoBehaviour {
             Enemies.Add(enemy);
         }
     }
+
+	bool checkEnemies(){
+		if (enemiesSpawned == maxEnemies) {
+			isCompleted = true;
+			return false;
+		}
+		return true;
+	}
 
     bool tooClose(Vector3 pos)
     {
