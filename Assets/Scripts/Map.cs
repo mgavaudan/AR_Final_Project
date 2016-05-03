@@ -6,9 +6,8 @@ public class Map : MonoBehaviour {
     public Transform force;
     public Transform ground;
     public Transform orbTarget;
-	public Transform minimap;
-    public Canvas display;
-	public Camera camera;
+	public MinimapManager minimap;
+	public Camera arcamera;
 
     public int width = 3;
     public int height = 3;
@@ -16,8 +15,6 @@ public class Map : MonoBehaviour {
     public int startY = 0;
     public Room roomPrefab;
 
-	public GameObject[] mapBoxes;
-	public GameObject arrow;
 	public float crossSpeed = 1;
 	public float crossTime = 2;
 
@@ -65,54 +62,42 @@ public class Map : MonoBehaviour {
 						southRoom = map [x] [y - 1];
 					if (x > 0)
 						westRoom = map [x - 1] [y];
-					map [x] [y].Initialize (northRoom, eastRoom, southRoom, westRoom, force, ground, orbTarget, display, x*width + y);
+					map [x] [y].Initialize (northRoom, eastRoom, southRoom, westRoom, force, ground, orbTarget, minimap, x*width + y);
 					map [x] [y].gameObject.SetActive (false);
-
-					/*	GameObject block = GameObject.CreatePrimitive (PrimitiveType.Cube);
-					block.transform.parent = minimap.transform;
-					block.transform.localPosition = new Vector3 (x*60, -60 * y, 0);
-					block.transform.localScale = new Vector3 (50, 50, 0);
-					block.GetComponent<Renderer>().material.color = Color.white;*/
-
 				}
 			}
-
-			mapBoxes = new GameObject[width * height];
-			for (int k = 0; k < width * height; k++) {
-				mapBoxes [k] = GameObject.Find ("box" + (k + 1));
-			}
-			arrow = GameObject.Find ("arrow");
 
 			CurrentRoom = map[startX][startY];
 			CurrentRoom.gameObject.SetActive(true);
 			CurrentRoom.StartShooting();
 
-			//OnGUI ();
+            minimap.Initialize(height, width, startX, startY);
 
 			isActive = true;
 			initialized = true;
+
+            CurrentRoom.CurrentHallIndex = 1;
         }
     }
 
 
     public void crossHall()
     {
-        Room nextRoom = CurrentRoom.CurrentHall.oppositeRoom;
-		if(nextRoom != null && !isCrossing)
+        Room.Hall hall = CurrentRoom.CurrentHall;
+		if(hall != null && !isCrossing)
         {
             CurrentRoom.StopShooting();
             CurrentRoom.gameObject.SetActive(false);
-            int oldHallInd = CurrentRoom.CurrentHallIndex;
+            int hallInd = CurrentRoom.CurrentHallIndex;
 
-            CurrentRoom = nextRoom;
+            CurrentRoom = hall.oppositeRoom;
             CurrentRoom.gameObject.SetActive(true);
-            CurrentRoom.CurrentHallIndex = oldHallInd;
+            CurrentRoom.CurrentHallIndex = hallInd;
 
 			CurrentRoom.transform.position -= ground.up * crossTime * crossSpeed;
 
             isCrossing = true;
-			arrow.transform.position = mapBoxes [CurrentRoom.id].transform.position;
-
+            minimap.crossHall();
         }
     }
 
@@ -144,11 +129,12 @@ public class Map : MonoBehaviour {
         {
             if (isCrossing)
             {
+				CurrentRoom.transform.position += ground.up * crossSpeed * Time.deltaTime;
 				timeCrossing += Time.deltaTime;
-				Vector3 movement = Vector3.MoveTowards (CurrentRoom.transform.position, transform.position, crossSpeed * Time.deltaTime);
-				CurrentRoom.transform.position += movement;
 				if (timeCrossing >= crossTime)
                 {
+                    while (CurrentRoom.CurrentHall == null)
+                        CurrentRoom.CurrentHallIndex++;
                     isCrossing = false;
                     CurrentRoom.StartShooting();
 					timeCrossing = 0;

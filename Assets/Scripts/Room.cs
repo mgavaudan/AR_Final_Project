@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class Room : MonoBehaviour
@@ -23,16 +22,15 @@ public class Room : MonoBehaviour
     public EnemySpawner enemySpawnerPrefab;
     public Fire orbPrefab;
 	public GameObject doorPrefab;
+    private MinimapManager minimap;
 
     public float switchAngle = 70;
     public float rotationTime = 1;
 
     private Transform force;
-	private Canvas display;
 
     public const int numHalls = 4;
 	public int id;
-
 
     public Hall CurrentHall { get { return halls[activeHall]; } }
     private List<Hall> halls = new List<Hall>();
@@ -46,19 +44,27 @@ public class Room : MonoBehaviour
 
         set
         {
-            CurrentHall.orb.StopShooting();
-            CurrentHall.orb.gameObject.SetActive(false);
-            CurrentHall.spawner.gameObject.SetActive(false);
-			CurrentHall.door.gameObject.SetActive(false);
+            if (CurrentHall != null)
+            {
+                CurrentHall.orb.StopShooting();
+                CurrentHall.orb.gameObject.SetActive(false);
+                CurrentHall.spawner.gameObject.SetActive(false);
+                CurrentHall.door.gameObject.SetActive(false);
+            }
 
             float angle = 360 / numHalls * (activeHall - value);
 
             activeHall = mod(value, numHalls);
             transform.RotateAround(transform.position, rotationAxis, angle);
 
-            CurrentHall.orb.gameObject.SetActive(true);
-            CurrentHall.spawner.gameObject.SetActive(true);
-			CurrentHall.door.gameObject.SetActive(true);
+            if (CurrentHall != null)
+            {
+                CurrentHall.orb.gameObject.SetActive(true);
+                CurrentHall.orb.StartShooting();
+                CurrentHall.spawner.gameObject.SetActive(true);
+                CurrentHall.door.gameObject.SetActive(true);
+            }
+            minimap.ArrowDirection = activeHall;
         }
     }
 
@@ -72,18 +78,15 @@ public class Room : MonoBehaviour
     private float angleRotated = 0;
 
     private bool initialized = false;
-	Image selectedPanel;
-	private Color selectedPanelColor = Color.blue;
-	private Color unselectedPanelColor = Color.white;
 
     public void Initialize(Room northRoom, Room eastRoom, Room southRoom, Room westRoom,
-		Transform force, Transform ground, Transform orbTarget, Canvas display, int id)
+		Transform force, Transform ground, Transform orbTarget, MinimapManager minimap, int id)
     {
         if(!initialized)
         {
 			this.id = id;
             this.force = force;
-            this.display = display;
+            this.minimap = minimap;
 
             List<Room> rooms = new List<Room> { northRoom, eastRoom, southRoom, westRoom };
 
@@ -112,6 +115,7 @@ public class Room : MonoBehaviour
 
 					GameObject door = Instantiate (doorPrefab, transform.position + dir * orbRadius * 1.2f, Quaternion.identity) as GameObject;
 					door.transform.RotateAround (door.transform.position, rotationAxis, i * 90);
+                    door.transform.parent = transform;
 
                     if (i > 0)
                     {
@@ -222,19 +226,18 @@ public class Room : MonoBehaviour
         activeHall = mod(activeHall - rotateDirection, numHalls);
         if (activeHall < 0)
             activeHall += numHalls;
+
+        minimap.ArrowDirection = activeHall;
+
         if (CurrentHall != null)
         {
             CurrentHall.orb.gameObject.SetActive(true);
             CurrentHall.spawner.gameObject.SetActive(true);
 			CurrentHall.door.gameObject.SetActive(true);
         }
-
-        selectedPanel.color = unselectedPanelColor; // unhighlight previously active room on "map'
-        selectedPanel = display.transform.Find("Room " + (activeHall + 1) + " Panel").GetComponent<Image>();
-        selectedPanel.color = selectedPanelColor; // highlight currently active room on "map"
     }
 
-    private int mod(int a, int b)
+    public int mod(int a, int b)
     {
         int c = a % b;
         if (c < 0)
