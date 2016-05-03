@@ -16,14 +16,25 @@ public class Map : MonoBehaviour {
     public int startY = 0;
     public Room roomPrefab;
 
+	public float crossSpeed = 1;
+	public float crossTime = 2;
+
+	private float timeCrossing = 0;
+
+	private bool isActive = false;
+
+
     public Room CurrentRoom { get; private set; }
 
-	forceAction forceScript;
+	private forceAction forceScript;
 
     bool initialized = false;
+
+	private bool isCrossing;
+
+
     public void Initialize()
     {
-		
         if(!initialized)
         {
 			forceScript = GameObject.Find ("Force").GetComponent<forceAction>();
@@ -70,7 +81,6 @@ public class Map : MonoBehaviour {
 			}
 
 
-
             CurrentRoom = map[startX][startY];
             CurrentRoom.gameObject.SetActive(true);
             CurrentRoom.StartShooting();
@@ -79,14 +89,12 @@ public class Map : MonoBehaviour {
             initialized = true;
         }
     }
-    
-    private bool isCrossing;
+
 
     public void crossHall()
     {
         Room nextRoom = CurrentRoom.CurrentHall.oppositeRoom;
-        // TODO: something has to set completed to be true when all enemies are defeated
-        if(nextRoom != null && CurrentRoom.CurrentHall.completed)
+		if(nextRoom != null && !isCrossing)
         {
             CurrentRoom.StopShooting();
             CurrentRoom.gameObject.SetActive(false);
@@ -96,11 +104,12 @@ public class Map : MonoBehaviour {
             CurrentRoom.gameObject.SetActive(true);
             CurrentRoom.CurrentHallIndex = oldHallInd;
 
+			CurrentRoom.transform.position -= ground.up * crossTime * crossSpeed;
+
             isCrossing = true;
         }
     }
 
-    bool isActive = false;
     public void Activate()
     {
         if (!isActive)
@@ -129,18 +138,17 @@ public class Map : MonoBehaviour {
         {
             if (isCrossing)
             {
-                // TODO: make animation while crossing
-                if (true)
+				timeCrossing += Time.deltaTime;
+				Vector3 movement = Vector3.MoveTowards (CurrentRoom.transform.position, transform.position, crossSpeed * Time.deltaTime);
+				CurrentRoom.transform.position += movement;
+				if (timeCrossing >= crossTime)
                 {
                     isCrossing = false;
                     CurrentRoom.StartShooting();
+					timeCrossing = 0;
                 }
             }
         }
 	}
 
-	public void moveForward(){
-		Vector3 movement = Vector3.MoveTowards (CurrentRoom.transform.position, camera.transform.position, 0.00000000001f);
-		CurrentRoom.transform.position += movement;
-	}
 }

@@ -6,23 +6,23 @@ public class Room : MonoBehaviour
 {
     public class Hall
     {
-        public Hall(EnemySpawner spawner, Fire orb, Room oppositeRoom)
+        public Hall(EnemySpawner spawner, Fire orb, GameObject door, Room oppositeRoom)
         {
             this.spawner = spawner;
             this.orb = orb;
+			this.door = door;
             this.oppositeRoom = oppositeRoom;
         }
 
         public EnemySpawner spawner;
         public Fire orb;
+		public GameObject door;
         public Room oppositeRoom;
-
-        // TODO: track when this is completed
-        public bool completed = false;
     }
 
     public EnemySpawner enemySpawnerPrefab;
     public Fire orbPrefab;
+	public GameObject doorPrefab;
 
     public float switchAngle = 70;
     public float rotationTime = 1;
@@ -47,6 +47,7 @@ public class Room : MonoBehaviour
             CurrentHall.orb.StopShooting();
             CurrentHall.orb.gameObject.SetActive(false);
             CurrentHall.spawner.gameObject.SetActive(false);
+			CurrentHall.door.gameObject.SetActive(false);
 
             float angle = 360 / numHalls * (activeHall - value);
 
@@ -55,6 +56,7 @@ public class Room : MonoBehaviour
 
             CurrentHall.orb.gameObject.SetActive(true);
             CurrentHall.spawner.gameObject.SetActive(true);
+			CurrentHall.door.gameObject.SetActive(true);
         }
     }
 
@@ -105,13 +107,17 @@ public class Room : MonoBehaviour
                     orb.transform.parent = transform;
                     orb.target = orbTarget;
 
+					GameObject door = Instantiate (doorPrefab, transform.position + dir * orbRadius * 1.2f, Quaternion.identity) as GameObject;
+					door.transform.RotateAround (door.transform.position, rotationAxis, i * 90);
+
                     if (i > 0)
                     {
                         spawner.gameObject.SetActive(false);
                         orb.gameObject.SetActive(false);
+						door.gameObject.SetActive(false);
                     }
 
-                    halls.Add(new Hall(spawner, orb, rooms[i]));
+                    halls.Add(new Hall(spawner, orb, door, rooms[i]));
                 }
                 else
                     halls.Add(null);
@@ -158,6 +164,7 @@ public class Room : MonoBehaviour
                     {
                         oldHall.orb.gameObject.SetActive(false);
                         oldHall.spawner.gameObject.SetActive(false);
+						oldHall.door.gameObject.SetActive(false);
                     }
 
                     if (CurrentHall == null)
@@ -194,7 +201,7 @@ public class Room : MonoBehaviour
 
     public void StartShooting()
     {
-        if(initialized || !CurrentHall.completed)
+		if(initialized || !CurrentHall.spawner.IsCompleted)
             CurrentHall.orb.StartShooting();
     }
 
@@ -221,6 +228,7 @@ public class Room : MonoBehaviour
         {
             CurrentHall.orb.gameObject.SetActive(true);
             CurrentHall.spawner.gameObject.SetActive(true);
+			CurrentHall.door.gameObject.SetActive(true);
         }
 
         selectedPanel.color = unselectedPanelColor; // unhighlight previously active room on "map'

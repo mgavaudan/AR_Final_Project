@@ -14,6 +14,18 @@ public class EnemySpawner : MonoBehaviour {
     private int maxSpawnTries = 5;
     private float timeSinceLastSpawn = 0;
 
+	bool isCompleted = false;
+	public bool IsCompleted
+	{
+		get {
+			return isCompleted;
+		}
+	}
+
+	// get iscompleted logic to work
+	// get spawn logic to work
+
+
 	// Use this for initialization
 	void Start () {
         Enemies = new List<Enemy>();

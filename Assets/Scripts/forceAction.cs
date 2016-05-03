@@ -31,7 +31,6 @@ public class forceAction : MonoBehaviour {
 		if (Physics.Raycast (transform.position, -1 * transform.up, out hit, float.PositiveInfinity, layermask)) {
 			Debug.Log ("hit" + hitTime);
 			hitTime += Time.deltaTime;
-
 			 
 			lineRenderer.SetPosition (1, hit.point);  
 
@@ -42,7 +41,7 @@ public class forceAction : MonoBehaviour {
 			}
 			else if (hit.collider.tag == "SF_Door") {
 				Map m = GameObject.Find ("Map").GetComponent<Map> ();
-				m.moveForward ();
+				m.crossHall();
 			}
 
 
