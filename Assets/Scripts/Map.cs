@@ -75,8 +75,6 @@ public class Map : MonoBehaviour {
 
 			isActive = true;
 			initialized = true;
-
-            CurrentRoom.CurrentHallIndex = 1;
         }
     }
 
@@ -133,11 +131,12 @@ public class Map : MonoBehaviour {
 				timeCrossing += Time.deltaTime;
 				if (timeCrossing >= crossTime)
                 {
-                    while (CurrentRoom.CurrentHall == null)
-                        CurrentRoom.CurrentHallIndex++;
                     isCrossing = false;
-                    CurrentRoom.StartShooting();
-					timeCrossing = 0;
+                    timeCrossing = 0;
+                    if (CurrentRoom.CurrentHall.oppositeRoom == null)
+                        CurrentRoom.rotateRoom(1);
+                    else
+                        CurrentRoom.StartShooting();
                 }
             }
         }

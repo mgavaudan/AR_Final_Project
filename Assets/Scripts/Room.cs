@@ -44,26 +44,25 @@ public class Room : MonoBehaviour
 
         set
         {
-            if (CurrentHall != null)
+            if (CurrentHall.oppositeRoom != null)
             {
                 CurrentHall.orb.StopShooting();
                 CurrentHall.orb.gameObject.SetActive(false);
                 CurrentHall.spawner.gameObject.SetActive(false);
-                CurrentHall.door.gameObject.SetActive(false);
             }
+            CurrentHall.door.gameObject.SetActive(false);
 
             float angle = 360 / numHalls * (activeHall - value);
 
             activeHall = mod(value, numHalls);
             transform.RotateAround(transform.position, rotationAxis, angle);
 
-            if (CurrentHall != null)
+            if (CurrentHall.oppositeRoom != null)
             {
                 CurrentHall.orb.gameObject.SetActive(true);
-                CurrentHall.orb.StartShooting();
                 CurrentHall.spawner.gameObject.SetActive(true);
-                CurrentHall.door.gameObject.SetActive(true);
             }
+            CurrentHall.door.gameObject.SetActive(true);
             minimap.ArrowDirection = activeHall;
         }
     }
@@ -99,35 +98,38 @@ public class Room : MonoBehaviour
 
             for (int i = 0; i < numHalls; i++)
             {
+                Vector3 dir = Quaternion.AngleAxis(i * 360 / numHalls, Vector3.up) * (-forceNormal);
+                Vector3 pos = transform.position + dir * spawnerRadius;
+
+                GameObject door = Instantiate (doorPrefab, transform.position + dir * orbRadius * 1.2f, Quaternion.identity) as GameObject;
+                door.transform.RotateAround (door.transform.position, rotationAxis, i * 90);
+                door.transform.parent = transform;
+
+                EnemySpawner spawner = null;
+                Fire orb = null;
+
                 if (rooms[i] != null)
                 {
-                    Vector3 dir = Quaternion.AngleAxis(i * 360 / numHalls, Vector3.up) * (-forceNormal);
-                    Vector3 pos = transform.position + dir * spawnerRadius;
-
-                    EnemySpawner spawner = Instantiate(enemySpawnerPrefab, pos,
+                    spawner = Instantiate(enemySpawnerPrefab, pos,
                             Quaternion.identity) as EnemySpawner;
                     spawner.transform.parent = transform;
 
                     pos = transform.position + dir * orbRadius;
-                    Fire orb = Instantiate(orbPrefab, pos, Quaternion.identity) as Fire;
+                    orb = Instantiate(orbPrefab, pos, Quaternion.identity) as Fire;
                     orb.transform.parent = transform;
                     orb.target = orbTarget;
-
-					GameObject door = Instantiate (doorPrefab, transform.position + dir * orbRadius * 1.2f, Quaternion.identity) as GameObject;
-					door.transform.RotateAround (door.transform.position, rotationAxis, i * 90);
-                    door.transform.parent = transform;
 
                     if (i > 0)
                     {
                         spawner.gameObject.SetActive(false);
                         orb.gameObject.SetActive(false);
-						door.gameObject.SetActive(false);
                     }
-
-                    halls.Add(new Hall(spawner, orb, door, rooms[i]));
                 }
-                else
-                    halls.Add(null);
+
+                if (i > 0)
+                    door.gameObject.SetActive(false);
+
+                halls.Add(new Hall(spawner, orb, door, rooms[i]));
             }
 				
             initialized = true;
@@ -162,20 +164,19 @@ public class Room : MonoBehaviour
                 if (angleRotated >= 360 / numHalls)
                 {
                     Hall oldHall = halls[mod(activeHall + rotateDirection, numHalls)];
-                    if (oldHall != null)
+                    if (oldHall.oppositeRoom != null)
                     {
                         oldHall.orb.gameObject.SetActive(false);
                         oldHall.spawner.gameObject.SetActive(false);
-						oldHall.door.gameObject.SetActive(false);
                     }
+                    oldHall.door.gameObject.SetActive(false);
+                    int oldRotateDirection = rotateDirection;
+                    rotateDirection = 0;
 
-                    if (CurrentHall == null)
-                        rotateRoom(rotateDirection);
+                    if (CurrentHall.oppositeRoom == null)
+                        rotateRoom(oldRotateDirection);
                     else
-                    {
-                        rotateDirection = 0;
                         CurrentHall.orb.StartShooting();
-                    }
                 }
             }
         }
@@ -203,7 +204,7 @@ public class Room : MonoBehaviour
 
     public void StartShooting()
     {
-		if(initialized || !CurrentHall.spawner.IsCompleted)
+		if(initialized && CurrentHall.orb != null)
             CurrentHall.orb.StartShooting();
     }
 
@@ -215,25 +216,28 @@ public class Room : MonoBehaviour
 
     enum Direction { Clockwise, Counterclockwise, None };
 
-    private void rotateRoom(int dir)
+    public void rotateRoom(int dir)
     {
-        readyToSwitch = false;
-        rotateDirection = dir;
-        angleRotated = 0;
-        if(CurrentHall != null)
-            CurrentHall.orb.StopShooting();
-
-        activeHall = mod(activeHall - rotateDirection, numHalls);
-        if (activeHall < 0)
-            activeHall += numHalls;
-
-        minimap.ArrowDirection = activeHall;
-
-        if (CurrentHall != null)
+        if (rotateDirection == 0)
         {
-            CurrentHall.orb.gameObject.SetActive(true);
-            CurrentHall.spawner.gameObject.SetActive(true);
-			CurrentHall.door.gameObject.SetActive(true);
+            readyToSwitch = false;
+            rotateDirection = dir;
+            angleRotated = 0;
+            if (CurrentHall.orb != null)
+                CurrentHall.orb.StopShooting();
+
+            activeHall = mod(activeHall - rotateDirection, numHalls);
+            if (activeHall < 0)
+                activeHall += numHalls;
+
+            minimap.ArrowDirection = activeHall;
+
+            if (CurrentHall.oppositeRoom != null)
+            {
+                CurrentHall.orb.gameObject.SetActive(true);
+                CurrentHall.spawner.gameObject.SetActive(true);
+            }
+            CurrentHall.door.gameObject.SetActive(true);
         }
     }
 
@@ -252,7 +256,7 @@ public class Room : MonoBehaviour
 
     public EnemySpawner activeEnemySpawner()
     {
-        return CurrentHall.spawner; ;
+        return CurrentHall.spawner;
     }
 
 
