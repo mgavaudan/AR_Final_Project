@@ -12,10 +12,9 @@ public class Fire : MonoBehaviour {
 	public float maxRadius = 100f;
 	public MissileHandler missilePrefab;
 
-	private List<GameObject> missiles;
+    private List<GameObject> missiles = new List<GameObject>();
 
 	void Start() {
-		missiles = new List<GameObject>();
 	}
 
 	void Update () {
@@ -43,6 +42,9 @@ public class Fire : MonoBehaviour {
 
 	public void StopShooting() {
 		CancelInvoke();
+        foreach (GameObject m in missiles)
+            Destroy(m);
+        missiles.Clear();
 	}
 
     public void DestroyMissile(GameObject m)
