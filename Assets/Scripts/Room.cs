@@ -31,6 +31,8 @@ public class Room : MonoBehaviour
 	private Canvas display;
 
     public const int numHalls = 4;
+	public int id;
+
 
     public Hall CurrentHall { get { return halls[activeHall]; } }
     private List<Hall> halls = new List<Hall>();
@@ -75,10 +77,11 @@ public class Room : MonoBehaviour
 	private Color unselectedPanelColor = Color.white;
 
     public void Initialize(Room northRoom, Room eastRoom, Room southRoom, Room westRoom,
-        Transform force, Transform ground, Transform orbTarget, Canvas display)
+		Transform force, Transform ground, Transform orbTarget, Canvas display, int id)
     {
         if(!initialized)
         {
+			this.id = id;
             this.force = force;
             this.display = display;
 
@@ -122,12 +125,7 @@ public class Room : MonoBehaviour
                 else
                     halls.Add(null);
             }
-
-            selectedPanel = display.transform.Find ("Room " + (activeHall+1) + " Panel").GetComponent<Image>();
-            selectedPanelColor.a = 0.4f;
-            unselectedPanelColor.a = 0.4f;
-            selectedPanel.color = selectedPanelColor; // highlight room on "map"
-
+				
             initialized = true;
         }
 	}

@@ -10,12 +10,14 @@ public class Map : MonoBehaviour {
     public Canvas display;
 	public Camera camera;
 
-    public int width = 2;
-    public int height = 2;
+    public int width = 3;
+    public int height = 3;
     public int startX = 0;
     public int startY = 0;
     public Room roomPrefab;
 
+	public GameObject[] mapBoxes;
+	public GameObject arrow;
 	public float crossSpeed = 1;
 	public float crossTime = 2;
 
@@ -51,13 +53,7 @@ public class Map : MonoBehaviour {
                 map.Add(row);
             }
 
-			float widthOffset = 0f;
-			float heightOffset = 0f;
-
-			Vector3 startingPos = minimap.transform.position;
-
 			for (int x = 0; x < width; x++) {
-				heightOffset = 0;
 
 				for (int y = 0; y < height; y++) {
 					Room northRoom = null, eastRoom = null, southRoom = null, westRoom = null;
@@ -69,24 +65,32 @@ public class Map : MonoBehaviour {
 						southRoom = map [x] [y - 1];
 					if (x > 0)
 						westRoom = map [x - 1] [y];
-					map [x] [y].Initialize (northRoom, eastRoom, southRoom, westRoom, force, ground, orbTarget, display);
+					map [x] [y].Initialize (northRoom, eastRoom, southRoom, westRoom, force, ground, orbTarget, display, x*width + y);
 					map [x] [y].gameObject.SetActive (false);
 
-					GameObject block = GameObject.CreatePrimitive (PrimitiveType.Cube);
+					/*	GameObject block = GameObject.CreatePrimitive (PrimitiveType.Cube);
 					block.transform.parent = minimap.transform;
 					block.transform.localPosition = new Vector3 (x*60, -60 * y, 0);
 					block.transform.localScale = new Vector3 (50, 50, 0);
-					block.GetComponent<Renderer>().material.color = Color.white;
+					block.GetComponent<Renderer>().material.color = Color.white;*/
+
 				}
 			}
 
+			mapBoxes = new GameObject[width * height];
+			for (int k = 0; k < width * height; k++) {
+				mapBoxes [k] = GameObject.Find ("box" + (k + 1));
+			}
+			arrow = GameObject.Find ("arrow");
 
-            CurrentRoom = map[startX][startY];
-            CurrentRoom.gameObject.SetActive(true);
-            CurrentRoom.StartShooting();
+			CurrentRoom = map[startX][startY];
+			CurrentRoom.gameObject.SetActive(true);
+			CurrentRoom.StartShooting();
 
-            isActive = true;
-            initialized = true;
+			//OnGUI ();
+
+			isActive = true;
+			initialized = true;
         }
     }
 
@@ -107,6 +111,8 @@ public class Map : MonoBehaviour {
 			CurrentRoom.transform.position -= ground.up * crossTime * crossSpeed;
 
             isCrossing = true;
+			arrow.transform.position = mapBoxes [CurrentRoom.id].transform.position;
+
         }
     }
 
