@@ -29,6 +29,12 @@ public class EnemySpawner : MonoBehaviour {
         }
 	}
 
+    public void DestroyEnemy(Enemy e)
+    {
+        Enemies.Remove(e);
+        Destroy(e.gameObject);
+    }
+
     void spawnEnemy() {
         Vector3 spawnPos = transform.position;
         int numTries = 0;
@@ -44,6 +50,7 @@ public class EnemySpawner : MonoBehaviour {
         {
             Quaternion spawnQuat = Quaternion.Euler(0, spawnAngle * (Random.value * 2 - 1), 0);
             Enemy enemy = Instantiate(enemyPrefab, spawnPos, spawnQuat) as Enemy;
+            enemy.Origin = this;
             enemy.transform.parent = transform;
             Enemies.Add(enemy);
         }
